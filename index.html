@@ -76,12 +76,10 @@ var P = {
 function svg(k, s, sw){ return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(sw||2)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[k]+'</svg>'; }
 
 var groups = [
-  {id:'battery', icon:'battery', name:'ব্যাটারি বিক্রি', sub:'নতুন ব্যাটারি', color:'#1B44C8', tint:'#E6EDFF', title:'ব্যাটারি বিক্রি — তিন ধাপে', action:'+ ব্যাটারি বিক্রি শুরু করুন', total:'আজ ব্যাটারি বিক্রি', custom:false,
-   steps:['কোন ব্যাটারি বিক্রি করছেন? বেছে নিন','কাস্টমার কে? (অচেনা হলে "নগদ" রাখুন)','কত টাকা পেলেন? বাকি থাকলে সেটাও লিখুন']},
+  {id:'battery', icon:'battery', name:'ব্যাটারি ও IPS', sub:'নতুন ব্যাটারি বিক্রি', color:'#1B44C8', tint:'#E6EDFF', title:'ব্যাটারি ও IPS বিক্রি — তিন ধাপে', action:'+ ব্যাটারি / IPS বিক্রি শুরু করুন', total:'আজ ব্যাটারি ও IPS বিক্রি', custom:false, ledger:true,
+   steps:['কোন ব্যাটারি বা IPS? বেছে নিন','কাস্টমার কে? (অচেনা হলে "নগদ" রাখুন)','নগদ কত পেলেন? বাকি থাকলে সেটাও লিখুন']},
   {id:'parts', icon:'parts', name:'পার্টস বিক্রি', sub:'ইজিবাইক ও অটো পার্টস', color:'#B45F06', tint:'#FFEBD6', title:'পার্টস বিক্রি — তিন ধাপে', action:'+ পার্টস বিক্রি শুরু করুন', total:'আজ পার্টস বিক্রি', custom:false,
    steps:['কোন পার্টস? নাম লিখে খুঁজুন','কয়টা নিচ্ছে? দাম ঠিক আছে কিনা দেখুন','কত টাকা পেলেন? বাকি থাকলে লিখুন']},
-  {id:'ips', icon:'ips', name:'IPS / সোলার ব্যাটারি', sub:'বাসা ও দোকানের লোডশেডিং ব্যাকআপ', color:'#2F6F1F', tint:'#E6F4DF', title:'IPS / সোলার ব্যাটারি বিক্রি — তিন ধাপে', action:'+ IPS ব্যাটারি বিক্রি শুরু করুন', total:'আজ IPS ব্যাটারি বিক্রি', custom:false,
-   steps:['কোন ব্যাটারি? লিথিয়াম না টিউবুলার, কত ক্ষমতার — আইটেম বেছে নিন','কাস্টমারের নাম ও ফোন (ইনস্টলের ঠিকানা নোটে লিখুন)','কত টাকা পেলেন? ওয়ারেন্টির মেয়াদ নোটে লিখুন (আলাদা ওয়ারেন্টি ঘর = কাস্টম)']},
   {id:'exchange', icon:'exchange', name:'পুরাতন দিয়ে নতুন নিল', sub:'এক্সচেঞ্জ', color:'#0B7A75', tint:'#DDF3F1', title:'পুরাতন দিয়ে নতুন — তিন ধাপে', action:'+ এক্সচেঞ্জ শুরু করুন', total:'আজ এক্সচেঞ্জে পুরাতনের দাম', custom:true,
    steps:['নতুন কোন ব্যাটারি দিচ্ছেন? বেছে নিন','পুরাতন ব্যাটারি ফেরত নিন — তার দাম লিখুন','বাকি টাকা নিন — হিসাব নিজেই হবে']},
   {id:'buy', icon:'buy', name:'পুরাতন ব্যাটারি কিনলাম', sub:'কাস্টমারের কাছ থেকে কেনা', color:'#6B3FA0', tint:'#EFE6FA', title:'পুরাতন ব্যাটারি কেনা — তিন ধাপে', action:'+ পুরাতন ব্যাটারি কিনুন', total:'আজ পুরাতন কিনতে খরচ', custom:true,
@@ -106,9 +104,10 @@ var pages = {
     ['পুরাতন ব্যাটারি জমা','ফেরত আসা পুরাতন ব্যাটারি',1],['ওয়ারেন্টি কার্ড প্রিন্ট','কাস্টমারকে দেওয়ার কার্ড (আলাদা ডিজাইন = আলাদা মূল্য)',1]]},
   reports:{name:'রিপোর্ট', color:'#14213D', tint:'#E3E8F4', hint:'হিসাব এক নজরে', btns:[
     ['দৈনিক বিক্রি রিপোর্ট','আজকের বিক্রির হিসাব'],['খরচ রিপোর্ট','কোন খাতে কত খরচ'],['লাভ-ক্ষতি','মাসের লাভ-ক্ষতি'],['ভ্যাট রিপোর্ট','শুধু রিপোর্ট; মুসক ৬.৩ রিটার্ন জমা নেই'],
-    ['মেকানিক কমিশন','কাকে কত কমিশন',1],['কর্মচারী ও অনুমতি','কে কী করতে পারবে']]}
+    ['কাস্টমার-ভিত্তিক বিক্রি ও রিপ্লেস','কাকে কত পিস বিক্রি, কত পিস রিপ্লেস',1,'ledger'],['মেকানিক কমিশন','কাকে কত কমিশন',1],['কর্মচারী ও অনুমতি','কে কী করতে পারবে']]}
 };
 
+pages.ledger = {name:'কাস্টমার-ভিত্তিক হিসাব', color:'#1B44C8', tint:'#E6EDFF', hint:'কাকে কত পিস বিক্রি, কত পিস রিপ্লেস — সব বিস্তারিত', btns:[]};
 var navItems = [['home','হোম','home'],['sell','বিক্রি','sell'],['buy','ক্রয়','box'],['money','বাকি ও টাকা','money'],['stock','স্টক','stock'],['warranty','ওয়ারেন্টি','shield'],['reports','রিপোর্ট','chart']];
 
 var state = {group:'battery', page:'home'};
@@ -146,9 +145,10 @@ function daily(color, ibg, icol, icon, text, target, dashed){
 function renderHome(){
   var cur = groups.filter(function(g){return g.id===state.group;})[0];
   var s = '<div class="row" style="gap:12px">'
-    + statCard('#fff','#E6EDFF','#1B44C8','আজ বিক্রি হয়েছে','#4A5568','trend')
-    + statCard('#fff','#DDF3F1','#0B6B67','ক্যাশ বাক্সে আছে','#4A5568','money')
-    + statCard('#FFF4DC','#FFE2A8','#5C3D00','কাস্টমারের কাছে পাব (বাকি)','#5C3D00','clock')
+    + statCard('#fff','#E6EDFF','#1B44C8','আজ নগদ বিক্রি','#4A5568','money')
+    + statCard('#FFF4DC','#FFE2A8','#5C3D00','আজ বাকি বিক্রি (ডিউ)','#5C3D00','clock')
+    + statCard('#fff','#DDF3F1','#0B6B67','ক্যাশ বাক্সে আছে','#4A5568','box')
+    + statCard('#FFF4DC','#FFE2A8','#5C3D00','মোট বাকি পাব (কাস্টমারের কাছে)','#5C3D00','trend')
     + '</div>';
   s += '<div><div style="font-size:21px;font-weight:700;margin-bottom:12px">কী করবেন? একটি বেছে নিন</div><div class="row">';
   groups.forEach(function(g){
@@ -164,6 +164,7 @@ function renderHome(){
     + '<div style="padding:18px 16px 20px;display:flex;flex-direction:column;gap:18px"><div class="row" style="gap:12px">'
     + cur.steps.map(function(t,i){ return '<div style="flex:1 1 240px;background:'+cur.tint+';border-radius:16px;padding:14px;display:flex;gap:12px;align-items:flex-start"><span class="ico" style="width:40px;height:40px;border-radius:20px;font-size:20px;font-weight:700;color:#fff;background:'+cur.color+'">'+(i+1)+'</span><span style="font-size:18px;line-height:1.5">'+t+'</span></div>'; }).join('')
     + '</div><button class="lift" style="min-height:68px;padding:0 24px;border:0;border-radius:16px;color:#fff;font-size:22px;font-weight:700;background:'+cur.color+';box-shadow:0 8px 18px rgba(15,30,74,.22)">'+cur.action+'</button>'
+    + (cur.ledger ? '<button class="lift" onclick="go(\'ledger\')" style="min-height:64px;padding:0 20px;border-radius:16px;font-size:19px;font-weight:700;color:#14213D;background:#FFFBF0;border:2px dashed #B58A2A;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">কাস্টমার-ভিত্তিক বিক্রি ও রিপ্লেস হিসাব <span style="font-size:12px;font-weight:400;color:#5C3D00;background:#FFF1D6;border-radius:6px;padding:2px 8px">কাস্টম · হেড অফিস</span></button>' : '')
     + '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:#F2F5FB;border-radius:14px;padding:14px 16px"><span style="font-size:16px;color:#4A5568">'+cur.total+'</span><span style="font-size:26px;font-weight:700">৳ —</span></div></div></div>';
   s += '<div><div style="font-size:21px;font-weight:700;margin-bottom:12px">আরও দরকারি কাজ</div><div class="row">'
     + daily('', '#DDF3F1','#0B6B67','money','কাস্টমারের কাছ থেকে টাকা পেলাম','money',false)
@@ -174,12 +175,29 @@ function renderHome(){
   return s;
 }
 
+function renderLedger(pg){
+  var rows=[['#DCEFD2'],['#DCEFD2'],['#FFF1B8'],['#DCEFD2'],['#F9C9C9'],['#FFF1B8']];
+  var th='padding:12px 10px;font-size:15px;font-weight:700;text-align:left;background:#1B44C8;color:#fff;white-space:nowrap';
+  var td='padding:12px 10px;font-size:16px;border-top:1px solid #E3E8F4';
+  var s='<button class="lift" onclick="go(\'home\')" style="align-self:flex-start;min-height:48px;padding:0 20px;border:0;border-radius:12px;background:#fff;box-shadow:0 2px 10px rgba(15,30,74,.10);color:#14213D;font-size:17px;font-weight:600">← হোমে ফিরুন</button>'
+   +'<div style="background:'+pg.color+';color:#fff;border-radius:20px;padding:20px 22px;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 20px rgba(15,30,74,.18)"><div style="font-size:28px;font-weight:700">'+pg.name+'</div><div style="font-size:16px;opacity:.92">'+pg.hint+'</div><span style="align-self:flex-start;font-size:13px;color:#5C3D00;background:#FFF1D6;border-radius:8px;padding:4px 10px">কাস্টম · হেড অফিস বানাবে</span></div>'
+   +'<div class="row" style="gap:12px"><label style="flex:1 1 200px;background:#fff;border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;font-size:14px;color:#4A5568">শুরুর তারিখ<input type="date" style="border:0;outline:0;font-size:18px;color:#14213D;min-height:40px;background:transparent"></label>'
+   +'<label style="flex:1 1 200px;background:#fff;border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;font-size:14px;color:#4A5568">শেষ তারিখ<input type="date" style="border:0;outline:0;font-size:18px;color:#14213D;min-height:40px;background:transparent"></label></div>'
+   +'<div class="card" style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;min-width:620px"><thead><tr><th style="'+th+'">কাস্টমারের নাম</th><th style="'+th+'">বিক্রি (সেট / পিছ)</th><th style="'+th+'">রিপ্লেস (সেট / পিছ)</th><th style="'+th+'">রিপ্লেস %</th></tr></thead><tbody>'
+   +rows.map(function(r){return '<tr style="background:'+r[0]+'"><td style="'+td+';font-weight:600">কাস্টমারের নাম</td><td style="'+td+'">—</td><td style="'+td+'">—</td><td style="'+td+'">—</td></tr>';}).join('')
+   +'<tr style="background:#F2F5FB"><td style="'+td+';font-weight:700">মোট</td><td style="'+td+';font-weight:700">—</td><td style="'+td+';font-weight:700">—</td><td style="'+td+';font-weight:700">—</td></tr></tbody></table></div>'
+   +'<div class="row" style="gap:10px;align-items:center;font-size:15px"><span style="background:#DCEFD2;border-radius:8px;padding:6px 14px">ভালো</span><span style="background:#FFF1B8;border-radius:8px;padding:6px 14px">মোটামুটি</span><span style="background:#F9C9C9;border-radius:8px;padding:6px 14px">খারাপ</span><span style="color:#4A5568">রঙের নিয়ম (কত % হলে কোন রঙ) আপনি ঠিক করে দেবেন</span></div>'
+   +'<div style="font-size:15px;color:#4A5568;line-height:1.6">নমুনা লেআউট: নাম ও রঙ উদাহরণ মাত্র, কোনো সংখ্যা নেই। কাস্টমারের নামে চাপলে তার প্রতিটি বিক্রি ও রিপ্লেসের তারিখসহ বিস্তারিত দেখা যাবে।</div>';
+  return s;
+}
+
 function renderPage(pg){
+  if(state.page==='ledger') return renderLedger(pg);
   var s = '<button class="lift" onclick="go(\'home\')" style="align-self:flex-start;min-height:48px;padding:0 20px;border:0;border-radius:12px;background:#fff;box-shadow:0 2px 10px rgba(15,30,74,.10);color:#14213D;font-size:17px;font-weight:600">← হোমে ফিরুন</button>'
     + '<div style="background:'+pg.color+';color:#fff;border-radius:20px;padding:20px 22px;display:flex;flex-direction:column;gap:4px;box-shadow:0 8px 20px rgba(15,30,74,.18)"><div style="font-size:28px;font-weight:700">'+pg.name+'</div><div style="font-size:16px;opacity:.92">'+pg.hint+'</div></div><div class="row">';
   pg.btns.forEach(function(b,i){
     var c = !!b[2];
-    s += '<button class="lift" style="flex:1 1 300px;min-height:104px;text-align:left;display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:18px;color:#14213D;'+(c?'background:#FFFBF0;border:2px dashed #B58A2A':'background:#fff;border:0;box-shadow:0 2px 10px rgba(15,30,74,.08)')+'">'
+    s += '<button class="lift" '+(b[3]?'onclick="go(\''+b[3]+'\')" ':'')+'style="flex:1 1 300px;min-height:104px;text-align:left;display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:18px;color:#14213D;'+(c?'background:#FFFBF0;border:2px dashed #B58A2A':'background:#fff;border:0;box-shadow:0 2px 10px rgba(15,30,74,.08)')+'">'
       + '<span class="ico" style="width:44px;height:44px;border-radius:14px;font-size:20px;font-weight:700;color:'+(c?'#7A4A00':pg.color)+';background:'+(c?'#FFE2A8':pg.tint)+'">'+(i+1)+'</span>'
       + '<span style="flex:1;display:flex;flex-direction:column;gap:4px;align-items:flex-start"><span style="font-size:20px;font-weight:700">'+b[0]+'</span><span style="font-size:14px;color:#4A5568;line-height:1.5">'+b[1]+'</span>'
       + (c?'<span style="font-size:12px;background:#FFF1D6;color:#5C3D00;border-radius:6px;padding:2px 8px">কাস্টম · হেড অফিস</span>':'')+'</span>'
