@@ -18,10 +18,21 @@ button{cursor:pointer}
 .row{display:flex;flex-wrap:wrap;gap:14px}
 .card{background:#fff;border-radius:18px;box-shadow:0 2px 10px rgba(15,30,74,.08)}
 .ico{flex:none;display:flex;align-items:center;justify-content:center}
+.sidebrand{display:none}
+@media (min-width:900px){
+  .shell{margin-left:250px}
+  .sidenav{position:fixed!important;left:0;top:0;bottom:0;width:250px;padding:22px 14px!important;background:#0F1E4A!important;z-index:6;overflow-y:auto}
+  .sidebrand{display:flex;align-items:center;gap:12px;color:#fff;font-weight:700;font-size:18px;line-height:1.3;margin:0 6px 22px}
+  .sidebrand img{width:52px;height:52px;border-radius:14px;background:#fff;object-fit:cover}
+  .navin{flex-direction:column!important;max-width:none!important;background:transparent!important;box-shadow:none!important;padding:0!important;gap:6px!important;overflow:visible!important;margin:0!important;border-radius:0!important}
+  .navbtn{flex:none!important;flex-direction:row!important;justify-content:flex-start!important;gap:14px!important;min-height:56px!important;padding:0 16px!important;font-size:17px!important;border-radius:14px!important;background:transparent!important;color:#C9D3F2!important}
+  .navbtn:hover{background:#1A2C66!important;color:#fff!important}
+  .navbtn.on{background:#1B44C8!important;color:#fff!important}
+}
 </style>
 </head>
 <body>
-<div style="display:flex;flex-direction:column;min-height:100vh">
+<div class="shell" style="display:flex;flex-direction:column;min-height:100vh">
 
 <div style="background:#0F1E4A;color:#fff;position:relative;overflow:hidden">
 <svg width="100%" height="100%" viewBox="0 0 1200 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="position:absolute;left:0;top:0">
@@ -50,8 +61,9 @@ button{cursor:pointer}
 <div style="font-size:14px;color:#4A5568">কনসেপ্ট লেআউট। ডটেড বা "কাস্টম" চিহ্নিত অংশ হেড অফিস বানাবে। সংখ্যা আপনার নিজের ডেটা থেকে আসবে।</div>
 </main>
 
-<nav aria-label="প্রধান মেনু" style="position:sticky;bottom:0;z-index:5;padding:8px 8px 10px;background:rgba(233,238,248,.92)">
-<div id="nav" style="max-width:1100px;margin:0 auto;display:flex;overflow-x:auto;padding:6px;gap:4px;background:#fff;border-radius:20px;box-shadow:0 6px 24px rgba(15,30,74,.18)"></div>
+<nav class="sidenav" aria-label="প্রধান মেনু" style="position:sticky;bottom:0;z-index:5;padding:8px 8px 10px;background:rgba(233,238,248,.92)">
+<div class="sidebrand"><img id="sbLogo" alt="" src=""><span>[দোকানের নাম]</span></div>
+<div id="nav" class="navin" style="max-width:1100px;margin:0 auto;display:flex;overflow-x:auto;padding:6px;gap:4px;background:#fff;border-radius:20px;box-shadow:0 6px 24px rgba(15,30,74,.18)"></div>
 </nav>
 </div>
 
@@ -131,7 +143,7 @@ function render(){
   }
   document.getElementById('nav').innerHTML = navItems.map(function(n){
     var on = state.page===n[0];
-    return '<button onclick="go(\''+n[0]+'\')" style="flex:1 0 84px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-radius:14px;font-size:13px;font-weight:600;'+(on?'background:#1B44C8;color:#fff':'background:#fff;color:#14213D')+'">'+svg(n[2],26)+n[1]+'</button>';
+    return '<button class="navbtn'+(on?' on':'')+'" onclick="go(\''+n[0]+'\')" style="flex:1 0 84px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-radius:14px;font-size:13px;font-weight:600;'+(on?'background:#1B44C8;color:#fff':'background:#fff;color:#14213D')+'">'+svg(n[2],26)+n[1]+'</button>';
   }).join('');
 }
 
@@ -207,6 +219,7 @@ function renderPage(pg){
   });
   return s + '</div>';
 }
+document.getElementById('sbLogo').src = document.querySelector('header img, img[alt="দোকানের লোগো"]').src;
 render();
 </script>
 </body>
