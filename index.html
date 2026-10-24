@@ -144,12 +144,13 @@ function daily(color, ibg, icol, icon, text, target, dashed){
 
 function renderHome(){
   var cur = groups.filter(function(g){return g.id===state.group;})[0];
-  var s = '<div class="row" style="gap:12px">'
+  var stats = '<div class="row" style="gap:12px">'
     + statCard('#fff','#E6EDFF','#1B44C8','আজ নগদ বিক্রি','#4A5568','money')
     + statCard('#FFF4DC','#FFE2A8','#5C3D00','আজ বাকি বিক্রি (ডিউ)','#5C3D00','clock')
     + statCard('#fff','#DDF3F1','#0B6B67','ক্যাশ বাক্সে আছে','#4A5568','box')
     + statCard('#FFF4DC','#FFE2A8','#5C3D00','মোট বাকি পাব (কাস্টমারের কাছে)','#5C3D00','trend')
     + '</div>';
+  var s = '';
   s += '<div><div style="font-size:21px;font-weight:700;margin-bottom:12px">কী করবেন? একটি বেছে নিন</div><div class="row">';
   groups.forEach(function(g){
     var on = g.id===state.group;
@@ -166,6 +167,7 @@ function renderHome(){
     + '</div><button class="lift" style="min-height:68px;padding:0 24px;border:0;border-radius:16px;color:#fff;font-size:22px;font-weight:700;background:'+cur.color+';box-shadow:0 8px 18px rgba(15,30,74,.22)">'+cur.action+'</button>'
     + (cur.ledger ? '<button class="lift" onclick="go(\'ledger\')" style="min-height:64px;padding:0 20px;border-radius:16px;font-size:19px;font-weight:700;color:#14213D;background:#FFFBF0;border:2px dashed #B58A2A;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">কাস্টমার-ভিত্তিক বিক্রি ও রিপ্লেস হিসাব <span style="font-size:12px;font-weight:400;color:#5C3D00;background:#FFF1D6;border-radius:6px;padding:2px 8px">কাস্টম · হেড অফিস</span></button>' : '')
     + '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:#F2F5FB;border-radius:14px;padding:14px 16px"><span style="font-size:16px;color:#4A5568">'+cur.total+'</span><span style="font-size:26px;font-weight:700">৳ —</span></div></div></div>';
+  s += stats;
   s += '<div><div style="font-size:21px;font-weight:700;margin-bottom:12px">আরও দরকারি কাজ</div><div class="row">'
     + daily('', '#DDF3F1','#0B6B67','money','কাস্টমারের কাছ থেকে টাকা পেলাম','money',false)
     + daily('', '#FFE9D3','#8A4300','box','কোম্পানি থেকে মাল কিনলাম','buy',false)
