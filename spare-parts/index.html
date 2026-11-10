@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spare Parts Shop — mCoreX Cloud</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F7FA;font-family:'Roboto','Noto Sans Bengali',system-ui,sans-serif;color:#212121}
+button,input{font-family:inherit}
+.side{display:flex}
+.bnav{display:none}
+.menuBtn{display:none}
+.chip{display:inline}
+@media (max-width:900px){.side{display:none}.bnav{display:block}.menuBtn{display:flex}.chip{display:none}}
+@media (max-width:480px){.brand{font-size:17px!important}}
+@media (max-width:600px){.hideSm{display:none!important}}
+.lift{transition:box-shadow .15s ease,transform .15s ease}
+.lift:hover{box-shadow:0 6px 16px rgba(0,0,0,.18);transform:translateY(-2px)}
+.lift:active{transform:scale(.99)}
+.sl:hover{background:#F0F4FA}
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+<div style="display:flex;flex-direction:column;min-height:100vh;box-sizing:border-box">
+
+<!-- app bar (mCoreX) -->
+<header style="position:sticky;top:0;z-index:6;height:56px;background:#1976D2;color:#fff;display:flex;align-items:center;gap:12px;padding:0 12px;box-shadow:0 2px 4px rgba(0,0,0,.2)">
+<button class="menuBtn" aria-label="{{L.s19}}" style="width:44px;height:44px;border:0;background:transparent;color:#fff;align-items:center;justify-content:center;cursor:pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+<span class="brand" style="font-size:20px;font-weight:500;letter-spacing:.01em;white-space:nowrap">mCoreX Cloud</span>
+<span class="chip" style="font-size:13px;background:rgba(255,255,255,.18);border-radius:16px;padding:4px 12px;white-space:nowrap">{{L.s0}}</span>
+<span style="flex:1"></span>
+<label class="hideSm" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border-radius:4px;padding:0 10px;height:38px;flex:0 1 320px;min-width:120px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+<span style="position:absolute;left:-9999px">{{L.s1}}</span>
+<input type="text" placeholder="{{L.s20}}" style="flex:1;min-width:0;border:0;outline:0;background:transparent;color:#fff;font-size:15px">
+</label>
+<button onClick="{{toggleLang}}" aria-label="{{langAria}}" style="flex:none;min-height:36px;padding:0 12px;border:1px solid rgba(255,255,255,.7);border-radius:4px;background:transparent;color:#fff;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap">{{langBtn}}</button>
+<span class="hideSm" aria-hidden="true" style="flex:none;width:36px;height:36px;border-radius:18px;background:#fff;color:#1976D2;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px">S</span>
+</header>
+
+<div style="display:flex;flex:1;align-items:stretch">
+
+<!-- sidebar (mCoreX) -->
+<nav class="side" aria-label="{{L.s19}}" style="flex:none;width:248px;flex-direction:column;background:#fff;border-right:1px solid #E0E0E0;padding:8px 0;position:sticky;top:56px;align-self:flex-start;height:calc(100vh - 56px);overflow-y:auto;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:12px;padding:10px 18px;color:#424242;font-size:14px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</div>
+<div style="display:flex;align-items:center;gap:12px;padding:10px 18px;color:#1976D2;font-size:14px;font-weight:700"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="16" height="11" rx="2"/><path d="M21 11v3"/><path d="M11 9l-2 4h4l-2 4"/></svg>Spare Parts Shop<span style="margin-left:auto">▾</span></div>
+<sc-for list="{{sideItems}}" as="s" hint-placeholder-count="7">
+<button class="sl" onClick="{{s.go}}" style="{{s.style}}">{{s.label}}</button>
+</sc-for>
+<div style="height:1px;background:#EEEEEE;margin:8px 0"></div>
+<sc-for list="{{sideOther}}" as="o" hint-placeholder-count="6">
+<div style="display:flex;align-items:center;padding:10px 18px;color:#616161;font-size:14px">{{o}}<span style="margin-left:auto;color:#9E9E9E">▸</span></div>
+</sc-for>
+</nav>
+
+<!-- main -->
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+<!-- gradient page header (mCoreX) -->
+<div style="background:linear-gradient(90deg,#0D47A1,#1565C0);color:#fff;padding:18px 20px">
+<div style="max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between">
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-size:13px;color:#E3F2FD">Spare Parts Shop › {{pageName}}</span>
+<span style="font-size:24px;font-weight:700">{{headTitle}}</span>
+<span style="font-size:14px;color:#E3F2FD">{{greeting}} · {{dateText}}</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px">
+</div>
+</div>
+</div>
+
+<div style="max-width:1080px;width:100%;margin:0 auto;padding:18px 16px 28px;display:flex;flex-direction:column;gap:20px;box-sizing:border-box">
+
+<!-- ============ HOME ============ -->
+<sc-if value="{{isHome}}" hint-placeholder-val="{{true}}">
+
+<!-- KPI tiles: solid colour like mCoreX dashboard -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+<div style="background:#1976D2;color:#fff;border-radius:8px;padding:14px 16px;box-shadow:0 2px 6px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;min-height:96px;box-sizing:border-box"><span aria-hidden="true" style="position:absolute;right:-18px;bottom:-22px;width:88px;height:88px;border-radius:44px;background:rgba(255,255,255,.14)"></span><span style="position:absolute;right:14px;top:14px;width:40px;height:40px;border-radius:20px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg></span><span style="font-size:14px;padding-right:48px">{{L.s4}}</span><span style="font-size:28px;font-weight:700">{{L.s5}}</span></div>
+<div style="background:#BF360C;color:#fff;border-radius:8px;padding:14px 16px;box-shadow:0 2px 6px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;min-height:96px;box-sizing:border-box"><span aria-hidden="true" style="position:absolute;right:-18px;bottom:-22px;width:88px;height:88px;border-radius:44px;background:rgba(255,255,255,.14)"></span><span style="position:absolute;right:14px;top:14px;width:40px;height:40px;border-radius:20px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 9h6M9 13h4"/></svg></span><span style="font-size:14px;padding-right:48px">{{L.s6}}</span><span style="font-size:28px;font-weight:700">{{L.s5}}</span></div>
+<div style="background:#00796B;color:#fff;border-radius:8px;padding:14px 16px;box-shadow:0 2px 6px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;min-height:96px;box-sizing:border-box"><span aria-hidden="true" style="position:absolute;right:-18px;bottom:-22px;width:88px;height:88px;border-radius:44px;background:rgba(255,255,255,.14)"></span><span style="position:absolute;right:14px;top:14px;width:40px;height:40px;border-radius:20px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></span><span style="font-size:14px;padding-right:48px">{{L.s7}}</span><span style="font-size:28px;font-weight:700">{{L.s5}}</span></div>
+<div style="background:#7B1FA2;color:#fff;border-radius:8px;padding:14px 16px;box-shadow:0 2px 6px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;min-height:96px;box-sizing:border-box"><span aria-hidden="true" style="position:absolute;right:-18px;bottom:-22px;width:88px;height:88px;border-radius:44px;background:rgba(255,255,255,.14)"></span><span style="position:absolute;right:14px;top:14px;width:40px;height:40px;border-radius:20px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span style="font-size:14px;padding-right:48px">{{L.s8}}</span><span style="font-size:28px;font-weight:700">{{L.s5}}</span></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font-size:18px;font-weight:700">{{L.s9}}</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+<sc-for list="{{tiles}}" as="t" hint-placeholder-count="4">
+<a class="lift" href="#" onClick="{{t.pick}}" style="{{t.style}}">
+<span aria-hidden="true" style="position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:60px;background:rgba(255,255,255,.12)"></span>
+<span aria-hidden="true" style="position:absolute;right:30px;bottom:-40px;width:80px;height:80px;border-radius:40px;background:rgba(255,255,255,.08)"></span>
+<span style="position:relative;width:52px;height:52px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;{{t.iconColor}}">
+<sc-if value="{{t.isBattery}}" hint-placeholder-val="{{true}}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="16" height="11" rx="2"/><path d="M21 11v3"/><path d="M11 9l-2 4h4l-2 4"/></svg></sc-if>
+<sc-if value="{{t.isParts}}" hint-placeholder-val="{{false}}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.200"/><path d="M12 2.500v3M12 18.500v3M2.500 12h3M18.500 12h3M5.300 5.300l2.100 2.100M16.600 16.600l2.100 2.100M18.700 5.300l-2.100 2.100M7.400 16.600l-2.100 2.100"/></svg></sc-if>
+<sc-if value="{{t.isExchange}}" hint-placeholder-val="{{false}}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg></sc-if>
+<sc-if value="{{t.isBuy}}" hint-placeholder-val="{{false}}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10l4 4 4-4M4 19h16"/></svg></sc-if>
+</span>
+<span style="position:relative;font-size:20px;font-weight:700;line-height:1.3">{{t.label}}</span>
+<span style="position:relative;font-size:14px;opacity:.95">{{t.sub}}</span>
+<span style="position:relative;margin-top:auto;display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px"><span style="{{t.tagStyle}}">{{t.tagText}}</span><span style="font-size:14px;font-weight:700">{{L.x4}}</span></span>
+</a>
+</sc-for>
+</div>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;background:linear-gradient(90deg,#0D47A1,#1565C0);color:#fff;border-radius:8px;padding:16px 18px;box-shadow:0 4px 12px rgba(0,0,0,.18)">
+<span style="flex:none;width:48px;height:48px;border-radius:24px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.500-3 8-7 10-4-2-7-5.500-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+<span style="flex:1 1 220px;display:flex;flex-direction:column;gap:2px"><span style="font-size:18px;font-weight:700">{{L.x5}}</span><span style="font-size:13px;color:#E3F2FD">Spare Parts Shop → Check warranty and claim</span></span>
+<label style="flex:1 1 260px;display:flex;gap:8px;align-items:center;background:#fff;border-radius:4px;padding:4px 4px 4px 12px">
+<span style="position:absolute;left:-9999px">{{L.x5}}</span>
+<input type="text" placeholder="{{L.x6}}" style="flex:1;min-width:0;border:0;outline:0;font-size:15px;color:#212121;min-height:40px;background:transparent">
+<button onClick="{{goWarranty}}" style="flex:none;min-height:40px;padding:0 16px;border:0;border-radius:4px;background:#BF360C;color:#fff;font-size:15px;font-weight:700;cursor:pointer">{{L.x7}}</button>
+</label>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font-size:18px;font-weight:700">{{L.s16}}</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+<sc-for list="{{quick}}" as="q" hint-placeholder-count="4">
+<button class="lift" onClick="{{q.go}}" style="{{q.bar}};min-height:72px;padding:12px 14px;border-radius:8px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.14);color:#212121;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center">
+<span style="{{q.dot}}">
+<sc-if value="{{q.isMoney}}" hint-placeholder-val="{{true}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></sc-if>
+<sc-if value="{{q.isBuy}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M12 12v9M3 8l9 4 9-4"/></svg></sc-if>
+<sc-if value="{{q.isWarranty}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.500-3 8-7 10-4-2-7-5.500-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></sc-if>
+<sc-if value="{{q.isReports}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></sc-if>
+</span>
+<span style="flex:1;display:flex;flex-direction:column;gap:4px;align-items:flex-start"><span style="font-size:16px;font-weight:700;line-height:1.4">{{q.label}}</span><span style="{{q.tagStyle}}">{{q.tagText}}</span></span>
+</button>
+</sc-for>
+</div>
+</div>
+
+</sc-if>
+
+<!-- ============ OTHER PAGES ============ -->
+<sc-if value="{{notHome}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;flex-direction:column;gap:18px">
+<button onClick="{{goHome}}" style="align-self:flex-start;min-height:44px;padding:0 16px;border:1px solid #1976D2;border-radius:4px;background:#fff;color:#1976D2;font-size:15px;font-weight:500;cursor:pointer">{{L.s17}}</button>
+
+<div style="{{pageHero}}">
+<svg width="100%" height="100%" viewBox="0 0 800 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true" style="position:absolute;inset:0">
+<circle cx="720" cy="20" r="110" fill="#FFFFFF" fill-opacity=".10"/>
+<circle cx="600" cy="170" r="70" fill="#FFFFFF" fill-opacity=".08"/>
+<circle cx="790" cy="150" r="40" fill="#FFFFFF" fill-opacity=".12"/>
+</svg>
+<div style="position:relative;display:flex;flex-direction:column;gap:6px">
+<span style="font-size:28px;font-weight:700">{{pageName}}</span>
+<span style="font-size:16px;color:#FFFFFF;opacity:.95">{{pageHint}}</span>
+<span style="align-self:flex-start;margin-top:6px;font-size:13px;font-weight:700;background:rgba(255,255,255,.2);border-radius:12px;padding:4px 12px">{{pageCount}}</span>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+<sc-for list="{{pageStats}}" as="k" hint-placeholder-count="3">
+<div style="{{k.style}}">
+<span style="font-size:14px;color:#616161">{{k.label}}</span>
+<span style="{{k.valueStyle}}">{{k.value}}</span>
+<span style="font-size:12px;color:#757575">{{k.src}}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font-size:18px;font-weight:700">{{L.x1}}</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">
+<sc-for list="{{topButtons}}" as="b" hint-placeholder-count="3">
+<button class="lift" style="{{b.style}}">
+<span style="display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px">
+<span style="{{b.badgeStyle}}">{{b.initial}}</span>
+<span style="{{b.tagStyle}}">{{b.tagText}}</span>
+</span>
+<span style="font-size:20px;font-weight:700;line-height:1.3">{{b.label}}</span>
+<span style="font-size:14px;line-height:1.5;opacity:.95">{{b.sub}}</span>
+<span style="{{b.pathStyle}}">{{b.path}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font-size:18px;font-weight:700">{{L.x2}}</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
+<sc-for list="{{restButtons}}" as="b" hint-placeholder-count="4">
+<button class="lift" style="{{b.style}}">
+<span style="{{b.badgeStyle}}">{{b.initial}}</span>
+<span style="flex:1;display:flex;flex-direction:column;gap:3px;align-items:flex-start;min-width:0">
+<span style="font-size:17px;font-weight:700">{{b.label}}</span>
+<span style="font-size:14px;color:#616161;line-height:1.5">{{b.sub}}</span>
+<span style="font-size:12px;color:#1565C0;line-height:1.4">{{b.path}}</span>
+</span>
+<span style="{{b.tagStyle}}">{{b.tagText}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+
+<div style="{{tipStyle}}">
+<span style="{{tipIcon}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.500 10.900V16h7v-2.100A6 6 0 0 0 12 3z"/></svg></span>
+<span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:700">{{L.x3}}</span><span style="font-size:15px;line-height:1.6">{{pageTip}}</span></span>
+</div>
+</div>
+</sc-if>
+
+<div style="font-size:13px;color:#616161;line-height:1.6">{{L.x9}}</div>
+
+</div>
+</main>
+</div>
+
+<!-- bottom nav: phone only -->
+<nav class="bnav" aria-label="{{L.s21}}" style="position:sticky;bottom:0;z-index:6;background:#fff;border-top:1px solid #E0E0E0;box-shadow:0 -2px 6px rgba(0,0,0,.08)">
+<div style="display:flex;overflow-x:auto">
+<sc-for list="{{sideItems}}" as="s" hint-placeholder-count="7">
+<button onClick="{{s.go}}" style="{{s.navStyle}}">{{s.short}}</button>
+</sc-for>
+</div>
+</nav>
+
+</div>
+</template>
+<script>
+
+class DCLogic { constructor(props) { this.props = props || {}; this.state = {}; } setState(p) { Object.assign(this.state, p); render(); } }
+
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { group: 'battery', page: 'home', pay: 'cash', lang: 'bn' }; }
+  renderVals() {
+    const lang = this.state.lang || 'bn';
+    const EN = {"[দোকানের নাম] · প্রধান শাখা": "[Shop name] · Main branch", "খুঁজুন": "Search", "চালু · mCoreX Cloud-এ আছে": "Live · in mCoreX Cloud", "পরীক্ষা বাকি · আছে, এখনো চালিয়ে দেখা হয়নি": "To test · exists, not tried yet", "আজ নগদ বিক্রি": "Today's cash sales", "৳ —": "৳ —", "আজ বাকিতে বিক্রি": "Today's credit sales", "ক্যাশ বাক্সে আছে": "Cash in drawer", "কাস্টমারের কাছে পাব (মোট বাকি)": "Customers owe us (total due)", "কী করবেন? একটি বেছে নিন": "What do you want to do? Pick one", "mCoreX-এ যেখানে:": "Where in mCoreX:", "টাকা কীভাবে নিলেন?": "How was it paid?", "চালু · Payment Type: Cash / Credit": "Live · Payment Type: Cash / Credit", "পুরো নগদ": "Full cash", "কিছু নগদ, কিছু বাকি": "Part cash, part due", "পুরো বাকি": "Full due", "আরও দরকারি কাজ": "More tasks", "← Spare Parts হোম": "← Spare Parts home", "সব কাজ mCoreX Cloud-এর আগে থেকে থাকা পাতা দিয়ে — Sales Invoice, POS, Customer Receipt, Spare Parts Shop ইত্যাদি। প্রতিটি বাটনের নিচে নীল লেখা = mCoreX মেনুতে কোথায় পাবেন। \"পরীক্ষা বাকি\" = আছে এমন পাতা দিয়ে করা যায়, তবে আমরা এখনো চালিয়ে দেখিনি। সব সংখ্যা আপনার নিজের ডেটা থেকে আসবে।": "Everything uses pages that already exist in mCoreX Cloud — Sales Invoice, POS, Customer Receipt, Spare Parts Shop and more. The blue text under each button shows where to find it in the mCoreX menu. \"To test\" = can be done with an existing page, but we haven't tried it yet. All figures come from your own data.", "মেনু": "Menu", "আইটেম বা সিরিয়াল খুঁজুন": "Search item or serial", "প্রধান মেনু": "Main menu", "চালু": "Live", "আসছে": "Coming", "পরীক্ষা বাকি": "To test", "ব্যাটারি ও IPS বিক্রি": "Battery & IPS sale", "ইজিবাইক, IPS, সোলার — সিরিয়াল সহ": "Easy-bike, IPS, solar — with serial", "ব": "B", "Spare Parts Shop → Battery and IPS sale (New Sales Invoice খোলে)": "Spare Parts Shop → Battery and IPS sale (opens New Sales Invoice)", "Sales Invoice খুলুন": "Open Sales Invoice", "আজ ব্যাটারি ও IPS বিক্রি": "Today's battery & IPS sales", "লাইভে আছে: বাটন চাপলে mCoreX-এর New Sales Invoice খোলে, Payment Type-এ Cash / Credit। সিরিয়াল লেখা হয় \"Enter serial numbers\" পাতায়; সেভের সময় সিরিয়াল চাওয়ার নিয়ম হেড অফিসে পাঠানো (CR-752)।": "Live: the button opens mCoreX's New Sales Invoice, with Payment Type Cash / Credit. Serials are entered on the \"Enter serial numbers\" page; asking for the serial on save has been sent to head office (CR-752).", "কোন ব্যাটারি? বেছে নিন এবং সিরিয়াল নম্বর দিন (ওয়ারেন্টির জন্য)": "Which battery? Pick it and enter the serial number (for warranty)", "কাস্টমার কে? মেকানিক / ইজিবাইক মালিক / IPS কাস্টমার": "Who is the customer? Mechanic / easy-bike owner / IPS customer", "Payment Type: Cash না Credit — নিচে দেখুন": "Payment Type: Cash or Credit — see below", "পার্টস বিক্রি": "Parts sale", "ইজিবাইক ও অটো পার্টস": "Easy-bike & auto parts", "প": "P", "Spare Parts Shop → Parts sale · কাউন্টারে: Point of Sale → POS Sale": "Spare Parts Shop → Parts sale · at the counter: Point of Sale → POS Sale", "পার্টস বিক্রি খুলুন": "Open Parts sale", "আজ পার্টস বিক্রি": "Today's parts sales", "দোকানে দাঁড়িয়ে দ্রুত বিক্রি হলে POS Sale সবচেয়ে সহজ; বাকিতে দিলে Sales Invoice (Credit)।": "For quick sales at the counter, POS Sale is easiest; for credit, use Sales Invoice (Credit).", "কোন পার্টস? নাম লিখে খুঁজুন": "Which part? Search by name", "কয়টা নিচ্ছে? দাম ঠিক আছে কিনা দেখুন": "How many? Check the price", "পুরাতন দিয়ে নতুন নিল": "Old for new", "এক্সচেঞ্জ": "Exchange", "এ": "E", "পুরাতন দিয়ে নতুন": "Old for new", "Exchange খুলুন": "Open Exchange", "আজ এক্সচেঞ্জে পুরাতনের দাম": "Today's trade-in value", "পুরাতন ব্যাটারির দাম বাদ দিয়ে নতুনটি বিক্রি।": "Sell the new one with the old battery's value deducted.", "নতুন কোন ব্যাটারি দিচ্ছেন? বেছে নিন": "Which new battery? Pick it", "পুরাতন ব্যাটারি ফেরত নিন — তার দাম লিখুন": "Take back the old battery — enter its value", "বাকি টাকা নিন": "Collect the balance", "পুরাতন ব্যাটারি কিনলাম": "Bought old batteries", "কেজি দরে, কাস্টমারের কাছ থেকে": "By weight (kg), from customers", "পু": "O", "পুরাতন ব্যাটারি কেনা": "Buying old batteries", "Old batteries খুলুন": "Open Old batteries", "আজ পুরাতন কিনতে খরচ": "Today's spend on old batteries", "লাইভ অ্যাপে আছে, কেজি দরে। তবে এই কেনা এখনো হিসাবের খাতায় নিজে থেকে যায় না — হেড অফিসে জানানো হয়েছে।": "Live, by kg. This purchase doesn't post to the accounts automatically yet — head office has been told.", "কার কাছ থেকে কিনছেন? নাম লিখুন": "Who are you buying from? Enter the name", "কত কেজি এবং কেজি প্রতি দাম কত?": "How many kg, and price per kg?", "ক্যাশ থেকে টাকা দিন": "Pay from cash", "পুরো টাকা ক্যাশে গেল। বাকির খাতায় কিছু যাবে না।": "All cash received. Nothing goes to dues.", "বিলটি Credit-এ সেভ করুন। তারপর যত টাকা পেলেন \"Receive money\" (Customer Receipt) দিয়ে লিখুন — বাকিটা কাস্টমারের বাকিতে থাকবে।": "Save the bill as Credit. Then enter what you received with \"Receive money\" (Customer Receipt) — the rest stays as the customer's due.", "বিলটি Credit-এ সেভ করুন — পুরো টাকা কাস্টমারের বাকিতে যাবে। কাস্টমারের নাম ও ফোন লাগবে। পরে টাকা পেলে \"Receive money\" দিয়ে লিখুন।": "Save the bill as Credit — the full amount goes to the customer's due. Customer name and phone required. When paid later, enter it with \"Receive money\".", "বিক্রি": "Sales", "বিক্রির সব কাজ — সব পাতা mCoreX Cloud-এ আছে": "All sales work — every page already exists in mCoreX Cloud", "সিরিয়াল ও ওয়ারেন্টি সহ": "With serial & warranty", "POS বিক্রি": "POS sale", "কাউন্টারে দ্রুত নগদ বিক্রি": "Quick cash sale at the counter", "বাকিতে বিক্রি": "Credit sale", "বিক্রির তালিকা": "Sales list", "আজ কী কী বিক্রি হলো": "What was sold today", "বিক্রি ফেরত": "Sales return", "কাস্টমার মাল ফেরত দিলে": "When a customer returns goods", "এক্সচেঞ্জ বিক্রি": "Exchange sale", "জব কার্ড": "Job cards", "মেরামত / সার্ভিসের কাজ": "Repair / service work", "ইজিবাইক সেট (৫টা)": "Easy-bike set (5 pcs)", "একই বিলে ৫টা ব্যাটারি, প্রতিটির সিরিয়াল আলাদা": "5 batteries on one bill, each with its own serial", "ক্রয়": "Purchase", "কোম্পানি বা সাপ্লায়ার থেকে মাল কেনা": "Buying stock from companies or suppliers", "নতুন ক্রয়": "New purchase", "মাল কেনা লিখুন": "Record a purchase", "ক্রয়ের তালিকা": "Purchase list", "কী কী কেনা হলো": "What was bought", "সাপ্লায়ার": "Suppliers", "কার কাছ থেকে কেনেন": "Who you buy from", "সাপ্লায়ারকে টাকা দিলাম": "Paid a supplier", "আংশিক বা পুরো": "Partial or full", "কেজি দরে": "By weight (kg)", "পুরাতন ব্যাটারি বিক্রি (স্ক্র্যাপ)": "Sell old batteries (scrap)", "জমা হওয়া পুরাতন ব্যাটারি বিক্রি": "Sell collected old batteries", "বাকি ও টাকা": "Dues & money", "বাকি": "Dues", "কার কাছে কত পাব, টাকা পেলে কোথায় লিখবেন": "Who owes what, and where to record money received", "টাকা পেলাম": "Money received", "পুরো বা আংশিক বাকি আদায়": "Collect full or partial dues", "বাকি তালিকা": "Dues list", "কে কত বাকি রেখেছে": "Who owes how much", "কাস্টমার": "Customers", "মেকানিক ও ইজিবাইক মালিক": "Mechanics & easy-bike owners", "কাস্টমার গ্রুপ": "Customer groups", "মেকানিক, গ্যারেজ, ডিলার আলাদা": "Separate mechanics, garages, dealers", "বাকির তাগাদা": "Due reminders", "কার বাকি কবে": "Whose due is when", "খরচ লিখুন": "Add expense", "দোকানের নিজস্ব খরচ": "Shop's own expenses", "ক্যাশ ও ব্যাংক": "Cash & bank", "কোথায় কত টাকা আছে": "How much money is where", "দিনের হিসাব মেলান": "Daily cash tally", "রাতে ক্যাশ গুনে মেলানো": "Count and match cash at night", "মেকানিক কমিশন": "Mechanic commission", "কাকে কত কমিশন": "Commission per mechanic", "স্টক": "Stock", "কোন মাল কত আছে": "How much of each item", "স্টক রিপোর্ট": "Stock report", "প্রতিটি আইটেমের বর্তমান স্টক": "Current stock of every item", "আইটেম ও দাম": "Items & prices", "নাম, কোড, বারকোড, দাম": "Name, code, barcode, price", "ব্যাটারির ধরন": "Battery types", "লিথিয়াম, টিউবুলার, ইজিবাইক, IPS": "Lithium, tubular, easy-bike, IPS", "কোন আইটেমে সিরিয়াল লাগবে": "Items that need a serial", "ব্যাটারি ও IPS-এ চালু করুন": "Turn on for batteries & IPS", "প্রথম দিনের স্টক": "Opening stock", "দোকানে এখন যা আছে": "What's in the shop now", "স্টক কম-বেশি ঠিক করা": "Fix stock differences", "গুনে মিল না হলে": "When the count doesn't match", "ওয়ারেন্টি": "Warranty", "কোন ব্যাটারির ওয়ারেন্টি কবে শেষ": "When each battery's warranty ends", "সিরিয়াল নম্বর লিখুন": "Enter serial numbers", "বিক্রির পর সিরিয়াল জমা": "Record serials after sale", "সিরিয়াল খুঁজুন": "Find a serial", "কোন ব্যাটারি কাকে বিক্রি": "Which battery was sold to whom", "ওয়ারেন্টি দেখুন ও ক্লেইম": "Check warranty & claim", "ব্যাটারি ফেরত এলে": "When a battery comes back", "ওয়ারেন্টি ক্লেইম তালিকা": "Warranty claims list", "সব ক্লেইম এক জায়গায়": "All claims in one place", "ওয়ারেন্টি কার্ড প্রিন্ট": "Print warranty card", "কাস্টমারকে দেওয়ার কার্ড": "Card for the customer", "সিরিয়াল ছাড়া বিক্রি": "Sold without serial", "যেগুলোর সিরিয়াল লেখা হয়নি": "Sales with no serial entered", "কোম্পানিতে ক্লেইম ফেরত": "Claim back to brand", "নষ্ট ব্যাটারি ব্র্যান্ডে ফেরত": "Return faulty batteries to the brand", "রিপোর্ট": "Reports", "হিসাব এক নজরে": "Accounts at a glance", "কাকে কী বিক্রি, কী রিপ্লেস": "Sold vs replaced", "কাস্টমার অনুযায়ী (সবুজ / হলুদ / লাল)": "By customer (green / yellow / red)", "বিক্রি রিপোর্ট": "Sales report", "দিন বা মাসের বিক্রি": "Daily or monthly sales", "খরচ রিপোর্ট": "Expense report", "কোন খাতে কত খরচ": "Spending by category", "লাভ-ক্ষতি": "Profit & loss", "মাসের লাভ-ক্ষতি": "Monthly profit & loss", "ভ্যাট রিপোর্ট": "VAT report", "শুধু রিপোর্ট": "Report only", "কর্মচারী ও অনুমতি": "Staff & permissions", "কে কী করতে পারবে": "Who can do what", "হোম": "Home", "ওয়ারেন্টি ও সিরিয়াল": "Warranty & serials", "কাস্টমারের কাছ থেকে টাকা পেলাম": "Money received from customer", "৳": "৳", "কোম্পানি থেকে মাল কিনলাম": "Bought stock from company", "ক": "P", "ওয়ারেন্টি ও সিরিয়াল খুঁজুন": "Find warranty & serial", "ও": "W", "র": "R", "শুভ রাত্রি": "Good night", "শুভ সকাল": "Good morning", "শুভ দুপুর": "Good afternoon", "শুভ বিকাল": "Good afternoon", "শুভ সন্ধ্যা": "Good evening", "আজকের দোকান": "Today's shop"};
+    Object.assign(EN, {"খুলুন →": "Open →", "সব সংখ্যা আপনার নিজের ডেটা থেকে আসবে।": "All figures come from your own data.", "পুরাতন ব্যাটারি স্টক": "Old battery stock", "কত পিস ও কত কেজি জমা আছে": "Pieces and kg in stock", "পুরাতন ব্যাটারি (কেজি)": "Old batteries (kg)", "সিরিয়াল দিয়ে ওয়ারেন্টি দেখুন": "Check warranty by serial", "দেখুন": "Check", "সবচেয়ে বেশি লাগে": "Used most", "সব কাজ": "All tasks", "টিপস": "Tip", "টি কাজ": " tasks", "উৎস:": "From:", "আজ মোট বিক্রি": "Today's total sales", "আজকের বিল": "Today's bills", "আজ ক্রয়": "Today's purchases", "সাপ্লায়ারকে দিতে হবে": "We owe suppliers", "কাস্টমারের কাছে পাব": "Customers owe us", "আজ আদায়": "Collected today", "ক্যাশ ও ব্যাংকে": "In cash & bank", "আইটেম": "Items", "ওয়ারেন্টি ক্লেইম": "Warranty claims", "আজ বিক্রি": "Today's sales", "এই মাসের খরচ": "This month's expenses", "কাউন্টারে নগদ হলে POS Sale, বাকিতে দিলে Sales Invoice-এ Credit।": "Cash at the counter: POS Sale. On credit: Sales Invoice with Credit.", "কোম্পানির বিল এলে সেদিনই Purchase Invoice লিখুন — তাহলে স্টক আর সাপ্লায়ারের পাওনা দুটোই ঠিক থাকে।": "Enter the Purchase Invoice the day the company bill arrives — stock and supplier dues stay correct.", "বাকির টাকা পেলে Customer Receipt-এ লিখুন — কাস্টমারের বাকি কমে যাবে।": "When a due is paid, record it in Customer Receipt — the customer's due goes down.", "প্রথম দিন Opening Inventory-তে দোকানের সব মাল লিখুন, তারপর থেকে ক্রয়-বিক্রিতে স্টক বদলাবে।": "On day one, enter all shop stock in Opening Inventory; after that, purchases and sales update it.", "ব্যাটারি বিক্রির দিনই সিরিয়াল লিখুন — না হলে পরে ওয়ারেন্টি খুঁজে পাবেন না।": "Enter the serial on the day you sell the battery — otherwise you can't find the warranty later.", "মাস শেষে \"কাকে কী বিক্রি, কী রিপ্লেস\" দেখুন — কোন কাস্টমারের ব্যাটারি বেশি ফেরত আসছে বোঝা যায়।": "At month end, check \"Sold vs replaced\" to see which customers return the most batteries."});
+    const tr = (x) => (lang === 'en' && EN[x] !== undefined ? EN[x] : x);
+    const L = {
+      x9: tr('সব সংখ্যা আপনার নিজের ডেটা থেকে আসবে।'),
+      x4: tr('খুলুন →'), x5: tr('সিরিয়াল দিয়ে ওয়ারেন্টি দেখুন'), x6: tr('সিরিয়াল নম্বর লিখুন'), x7: tr('দেখুন'),
+      x1: tr('সবচেয়ে বেশি লাগে'), x2: tr('সব কাজ'), x3: tr('টিপস'),
+      s0: tr("[দোকানের নাম] · প্রধান শাখা"),
+      s1: tr("খুঁজুন"),
+      s2: tr("চালু · mCoreX Cloud-এ আছে"),
+      s3: tr("পরীক্ষা বাকি · আছে, এখনো চালিয়ে দেখা হয়নি"),
+      s4: tr("আজ নগদ বিক্রি"),
+      s5: tr("৳ —"),
+      s6: tr("আজ বাকিতে বিক্রি"),
+      s7: tr("ক্যাশ বাক্সে আছে"),
+      s8: tr("কাস্টমারের কাছে পাব (মোট বাকি)"),
+      s9: tr("কী করবেন? একটি বেছে নিন"),
+      s10: tr("mCoreX-এ যেখানে:"),
+      s11: tr("টাকা কীভাবে নিলেন?"),
+      s12: tr("চালু · Payment Type: Cash / Credit"),
+      s13: tr("পুরো নগদ"),
+      s14: tr("কিছু নগদ, কিছু বাকি"),
+      s15: tr("পুরো বাকি"),
+      s16: tr("আরও দরকারি কাজ"),
+      s17: tr("← Spare Parts হোম"),
+      s18: tr("সব কাজ mCoreX Cloud-এর আগে থেকে থাকা পাতা দিয়ে — Sales Invoice, POS, Customer Receipt, Spare Parts Shop ইত্যাদি। প্রতিটি বাটনের নিচে নীল লেখা = mCoreX মেনুতে কোথায় পাবেন। \"পরীক্ষা বাকি\" = আছে এমন পাতা দিয়ে করা যায়, তবে আমরা এখনো চালিয়ে দেখিনি। সব সংখ্যা আপনার নিজের ডেটা থেকে আসবে।"),
+      s19: tr("মেনু"),
+      s20: tr("আইটেম বা সিরিয়াল খুঁজুন"),
+      s21: tr("প্রধান মেনু")
+    };
+
+    const sel = this.state.group;
+    const page = this.state.page;
+    const pay = this.state.pay;
+
+    const TAG = {
+      live: { text: tr('চালু'), style: 'flex:none;font-size:12px;font-weight:700;background:#E8F5E9;color:#1B5E20;border-radius:12px;padding:3px 10px' },
+      soon: { text: tr('আসছে'), style: 'flex:none;font-size:12px;font-weight:700;background:#E3F2FD;color:#0D47A1;border-radius:12px;padding:3px 10px' },
+      try: { text: tr('পরীক্ষা বাকি'), style: 'flex:none;font-size:12px;font-weight:700;background:#FFF8E1;color:#6D4C00;border-radius:12px;padding:3px 10px' },
+      none: { text: '', style: 'display:none' }
+    };
+
+    for (const k in TAG) TAG[k] = { text: '', style: 'display:none' };
+    const defs = {
+      battery: { label: tr('ব্যাটারি ও IPS বিক্রি'), sub: tr('ইজিবাইক, IPS, সোলার — সিরিয়াল সহ'), initial: tr('ব'), color: '#1976D2', tint: '#E3F2FD', status: 'live',
+        path: tr('Spare Parts Shop → Battery and IPS sale (New Sales Invoice খোলে)'), title: tr('ব্যাটারি ও IPS বিক্রি'), action: tr('Sales Invoice খুলুন'), total: tr('আজ ব্যাটারি ও IPS বিক্রি'), pay: true,
+        note: tr('লাইভে আছে: বাটন চাপলে mCoreX-এর New Sales Invoice খোলে, Payment Type-এ Cash / Credit। সিরিয়াল লেখা হয় "Enter serial numbers" পাতায়; সেভের সময় সিরিয়াল চাওয়ার নিয়ম হেড অফিসে পাঠানো (CR-752)।'),
+        steps: [tr('কোন ব্যাটারি? বেছে নিন এবং সিরিয়াল নম্বর দিন (ওয়ারেন্টির জন্য)'), tr('কাস্টমার কে? মেকানিক / ইজিবাইক মালিক / IPS কাস্টমার'), tr('Payment Type: Cash না Credit — নিচে দেখুন')] },
+      parts: { label: tr('পার্টস বিক্রি'), sub: tr('ইজিবাইক ও অটো পার্টস'), initial: tr('প'), color: '#BF360C', tint: '#FFF3E0', status: 'live',
+        path: tr('Spare Parts Shop → Parts sale · কাউন্টারে: Point of Sale → POS Sale'), title: tr('পার্টস বিক্রি'), action: tr('পার্টস বিক্রি খুলুন'), total: tr('আজ পার্টস বিক্রি'), pay: true,
+        note: tr('দোকানে দাঁড়িয়ে দ্রুত বিক্রি হলে POS Sale সবচেয়ে সহজ; বাকিতে দিলে Sales Invoice (Credit)।'),
+        steps: [tr('কোন পার্টস? নাম লিখে খুঁজুন'), tr('কয়টা নিচ্ছে? দাম ঠিক আছে কিনা দেখুন'), tr('Payment Type: Cash না Credit — নিচে দেখুন')] },
+      exchange: { label: tr('পুরাতন দিয়ে নতুন নিল'), sub: tr('এক্সচেঞ্জ'), initial: tr('এ'), color: '#00796B', tint: '#E0F2F1', status: 'live',
+        path: 'Spare Parts Shop → Exchange (old for new)', title: tr('পুরাতন দিয়ে নতুন'), action: tr('Exchange খুলুন'), total: tr('আজ এক্সচেঞ্জে পুরাতনের দাম'), pay: false,
+        note: tr('পুরাতন ব্যাটারির দাম বাদ দিয়ে নতুনটি বিক্রি।'),
+        steps: [tr('নতুন কোন ব্যাটারি দিচ্ছেন? বেছে নিন'), tr('পুরাতন ব্যাটারি ফেরত নিন — তার দাম লিখুন'), tr('বাকি টাকা নিন')] },
+      buy: { label: tr('পুরাতন ব্যাটারি কিনলাম'), sub: tr('কেজি দরে, কাস্টমারের কাছ থেকে'), initial: tr('পু'), color: '#7B1FA2', tint: '#F3E5F5', status: 'live',
+        path: 'Spare Parts Shop → Old batteries', title: tr('পুরাতন ব্যাটারি কেনা'), action: tr('Old batteries খুলুন'), total: tr('আজ পুরাতন কিনতে খরচ'), pay: false,
+        note: tr('লাইভ অ্যাপে আছে, কেজি দরে। তবে এই কেনা এখনো হিসাবের খাতায় নিজে থেকে যায় না — হেড অফিসে জানানো হয়েছে।'),
+        steps: [tr('কার কাছ থেকে কিনছেন? নাম লিখুন'), tr('কত কেজি এবং কেজি প্রতি দাম কত?'), tr('ক্যাশ থেকে টাকা দিন')] }
+    };
+    const order = ['battery', 'parts', 'exchange', 'buy'];
+    const cur = defs[sel];
+
+    const go = (id) => { this.setState({ page: id }); try { window.scrollTo(0, 0); } catch (e) {} };
+    const tiles = order.map((id) => {
+      const d = defs[id];
+      const on = true;
+      const ic = { battery: 'isBattery', parts: 'isParts', exchange: 'isExchange', buy: 'isBuy' };
+      return {
+        label: d.label, sub: d.sub, initial: d.initial, pressed: on,
+        href: 'https://stagingerpcloud.mtechsolscloud.com' + ({ battery: '/sales/invoices/new', parts: '/pos', exchange: '/spares/exchange', buy: '/spares/oldbuy' })[id],
+        isBattery: id === 'battery', isParts: id === 'parts', isExchange: id === 'exchange', isBuy: id === 'buy',
+        iconColor: 'color:' + d.color,
+        pick: () => go(id === 'buy' ? 'buy' : 'sell'),
+        style: 'position:relative;overflow:hidden;min-height:190px;box-sizing:border-box;text-decoration:none;text-align:left;display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding:16px;border-radius:8px;cursor:pointer;' +
+          (on ? 'background:' + d.color + ';color:#fff;border:2px solid ' + d.color + ';box-shadow:0 6px 14px rgba(0,0,0,.22)'
+              : 'background:#fff;color:#212121;border:2px solid #E0E0E0;box-shadow:0 1px 4px rgba(0,0,0,.10)'),
+        iconStyle: 'width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;margin-bottom:2px;' +
+          (on ? 'background:#fff;color:' + d.color : 'background:' + d.color + ';color:#fff'),
+        tagText: TAG[d.status].text,
+        tagStyle: TAG[d.status].style + ';margin-top:auto'
+      };
+    });
+
+    const segBase = 'min-height:48px;padding:0 16px;border:0;font-size:15px;font-weight:500;cursor:pointer;';
+    const payBtn = (id) => segBase + (pay === id ? 'background:' + cur.color + ';color:#fff' : 'background:#fff;color:#424242');
+    const payHints = {
+      cash: tr('পুরো টাকা ক্যাশে গেল। বাকির খাতায় কিছু যাবে না।'),
+      part: tr('বিলটি Credit-এ সেভ করুন। তারপর যত টাকা পেলেন "Receive money" (Customer Receipt) দিয়ে লিখুন — বাকিটা কাস্টমারের বাকিতে থাকবে।'),
+      due: tr('বিলটি Credit-এ সেভ করুন — পুরো টাকা কাস্টমারের বাকিতে যাবে। কাস্টমারের নাম ও ফোন লাগবে। পরে টাকা পেলে "Receive money" দিয়ে লিখুন।')
+    };
+
+    const pages = {
+      sell: { stats: [[tr('আজ মোট বিক্রি'),'৳ —','Sales Report'],[tr('আজ বাকিতে বিক্রি'),'৳ —','Sales Report'],[tr('আজকের বিল'),'—','Sales Invoices']], tip: tr('কাউন্টারে নগদ হলে POS Sale, বাকিতে দিলে Sales Invoice-এ Credit।'), name: tr('বিক্রি'), short: tr('বিক্রি'), color: '#1976D2', tint: '#E3F2FD', hint: tr('বিক্রির সব কাজ — সব পাতা mCoreX Cloud-এ আছে'), btns: [
+        [tr('ব্যাটারি ও IPS বিক্রি'), tr('সিরিয়াল ও ওয়ারেন্টি সহ'), 'live', 'Spare Parts Shop → Battery and IPS sale'],
+        [tr('পার্টস বিক্রি'), tr('ইজিবাইক ও অটো পার্টস'), 'live', 'Spare Parts Shop → Parts sale'],
+        [tr('POS বিক্রি'), tr('কাউন্টারে দ্রুত নগদ বিক্রি'), 'live', 'Point of Sale → POS Sale'],
+        [tr('বাকিতে বিক্রি'), 'Payment Type: Credit', 'live', 'Sales & Customers → Sales Invoices'],
+        [tr('বিক্রির তালিকা'), tr('আজ কী কী বিক্রি হলো'), 'live', 'Sales & Customers → Sales Invoices'],
+        [tr('বিক্রি ফেরত'), tr('কাস্টমার মাল ফেরত দিলে'), 'live', 'Sales & Customers → Sales Returns'],
+        [tr('পুরাতন দিয়ে নতুন'), tr('এক্সচেঞ্জ বিক্রি'), 'live', 'Spare Parts Shop → Exchange (old for new)'],
+        [tr('জব কার্ড'), tr('মেরামত / সার্ভিসের কাজ'), 'live', 'Spare Parts Shop → Job cards'],
+        [tr('ইজিবাইক সেট (৫টা)'), tr('একই বিলে ৫টা ব্যাটারি, প্রতিটির সিরিয়াল আলাদা'), 'try', 'Battery and IPS sale → Qty 5'] ] },
+      buy: { stats: [[tr('আজ ক্রয়'),'৳ —','Purchase Report'],[tr('সাপ্লায়ারকে দিতে হবে'),'৳ —','Payables']], tip: tr('কোম্পানির বিল এলে সেদিনই Purchase Invoice লিখুন — তাহলে স্টক আর সাপ্লায়ারের পাওনা দুটোই ঠিক থাকে।'), name: tr('ক্রয়'), short: tr('ক্রয়'), color: '#7B1FA2', tint: '#F3E5F5', hint: tr('কোম্পানি বা সাপ্লায়ার থেকে মাল কেনা'), btns: [
+        [tr('নতুন ক্রয়'), tr('মাল কেনা লিখুন'), 'live', 'Purchases & Suppliers → Purchase Invoices'],
+        [tr('ক্রয়ের তালিকা'), tr('কী কী কেনা হলো'), 'live', 'Purchases & Suppliers → Purchase Invoices'],
+        [tr('সাপ্লায়ার'), tr('কার কাছ থেকে কেনেন'), 'live', 'Purchases & Suppliers → Suppliers'],
+        [tr('সাপ্লায়ারকে টাকা দিলাম'), tr('আংশিক বা পুরো'), 'live', 'Purchases & Suppliers → Supplier Payment'],
+        [tr('পুরাতন ব্যাটারি কেনা'), tr('কেজি দরে'), 'live', 'Spare Parts Shop → Old batteries'],
+        [tr('পুরাতন ব্যাটারি বিক্রি (স্ক্র্যাপ)'), tr('জমা হওয়া পুরাতন ব্যাটারি বিক্রি'), 'live', 'Spare Parts Shop → Sell old batteries as scrap'] ] },
+      money: { stats: [[tr('কাস্টমারের কাছে পাব'),'৳ —','Receivables'],[tr('আজ আদায়'),'৳ —','Receipt Report'],[tr('ক্যাশ ও ব্যাংকে'),'৳ —','Cash & Bank Report']], tip: tr('বাকির টাকা পেলে Customer Receipt-এ লিখুন — কাস্টমারের বাকি কমে যাবে।'), name: tr('বাকি ও টাকা'), short: tr('বাকি'), color: '#00796B', tint: '#E0F2F1', hint: tr('কার কাছে কত পাব, টাকা পেলে কোথায় লিখবেন'), btns: [
+        [tr('টাকা পেলাম'), tr('পুরো বা আংশিক বাকি আদায়'), 'live', 'Sales & Customers → Customer Receipt'],
+        [tr('বাকি তালিকা'), tr('কে কত বাকি রেখেছে'), 'live', 'Sales & Customers → Reports → Receivables'],
+        [tr('কাস্টমার'), tr('মেকানিক ও ইজিবাইক মালিক'), 'live', 'Sales & Customers → Customer Master'],
+        [tr('কাস্টমার গ্রুপ'), tr('মেকানিক, গ্যারেজ, ডিলার আলাদা'), 'live', 'Sales & Customers → Customer Groups'],
+        [tr('বাকির তাগাদা'), tr('কার বাকি কবে'), 'live', 'Spare Parts Shop → Due reminders'],
+        [tr('খরচ লিখুন'), tr('দোকানের নিজস্ব খরচ'), 'live', 'Expenses & Vouchers → Expenses'],
+        [tr('ক্যাশ ও ব্যাংক'), tr('কোথায় কত টাকা আছে'), 'live', 'Expenses & Vouchers → Cash & Bank Report'],
+        [tr('দিনের হিসাব মেলান'), tr('রাতে ক্যাশ গুনে মেলানো'), 'live', 'Spare Parts Shop → Daily cash tally'],
+        [tr('মেকানিক কমিশন'), tr('কাকে কত কমিশন'), 'live', 'Spare Parts Shop → Mechanic commission'] ] },
+      stock: { stats: [[tr('আইটেম'),'—','Items'],[tr('পুরাতন ব্যাটারি (কেজি)'),'—','Sell old batteries as scrap']], tip: tr('প্রথম দিন Opening Inventory-তে দোকানের সব মাল লিখুন, তারপর থেকে ক্রয়-বিক্রিতে স্টক বদলাবে।'), name: tr('স্টক'), short: tr('স্টক'), color: '#455A64', tint: '#ECEFF1', hint: tr('কোন মাল কত আছে'), btns: [
+        [tr('স্টক রিপোর্ট'), tr('প্রতিটি আইটেমের বর্তমান স্টক'), 'live', 'Inventory & Stock → Stock Report'],
+        [tr('আইটেম ও দাম'), tr('নাম, কোড, বারকোড, দাম'), 'live', 'Inventory & Stock → Items'],
+        [tr('পুরাতন ব্যাটারি স্টক'), tr('কত পিস ও কত কেজি জমা আছে'), 'live', 'Spare Parts Shop → Sell old batteries as scrap'],
+        [tr('ব্যাটারির ধরন'), tr('লিথিয়াম, টিউবুলার, ইজিবাইক, IPS'), 'live', 'Inventory & Stock → Item Groups'],
+        [tr('কোন আইটেমে সিরিয়াল লাগবে'), tr('ব্যাটারি ও IPS-এ চালু করুন'), 'live', 'Spare Parts Shop → Serial setup for items'],
+        [tr('প্রথম দিনের স্টক'), tr('দোকানে এখন যা আছে'), 'live', 'Inventory & Stock → Opening Inventory'],
+        [tr('স্টক কম-বেশি ঠিক করা'), tr('গুনে মিল না হলে'), 'live', 'Inventory & Stock → Stock Adjustment'] ] },
+      warranty: { stats: [[tr('ওয়ারেন্টি ক্লেইম'),'—','Warranty claims'],[tr('সিরিয়াল ছাড়া বিক্রি'),'—','Sold without serial']], tip: tr('ব্যাটারি বিক্রির দিনই সিরিয়াল লিখুন — না হলে পরে ওয়ারেন্টি খুঁজে পাবেন না।'), name: tr('ওয়ারেন্টি'), short: tr('ওয়ারেন্টি'), color: '#BF360C', tint: '#FFF3E0', hint: tr('কোন ব্যাটারির ওয়ারেন্টি কবে শেষ'), btns: [
+        [tr('সিরিয়াল নম্বর লিখুন'), tr('বিক্রির পর সিরিয়াল জমা'), 'live', 'Spare Parts Shop → Enter serial numbers'],
+        [tr('সিরিয়াল খুঁজুন'), tr('কোন ব্যাটারি কাকে বিক্রি'), 'live', 'Spare Parts Shop → Find a serial number'],
+        [tr('ওয়ারেন্টি দেখুন ও ক্লেইম'), tr('ব্যাটারি ফেরত এলে'), 'live', 'Spare Parts Shop → Check warranty and claim'],
+        [tr('ওয়ারেন্টি ক্লেইম তালিকা'), tr('সব ক্লেইম এক জায়গায়'), 'live', 'Spare Parts Shop → Warranty claims'],
+        [tr('ওয়ারেন্টি কার্ড প্রিন্ট'), tr('কাস্টমারকে দেওয়ার কার্ড'), 'live', 'Spare Parts Shop → Warranty card'],
+        [tr('সিরিয়াল ছাড়া বিক্রি'), tr('যেগুলোর সিরিয়াল লেখা হয়নি'), 'live', 'Spare Parts Shop → Sold without serial'],
+        [tr('কোম্পানিতে ক্লেইম ফেরত'), tr('নষ্ট ব্যাটারি ব্র্যান্ডে ফেরত'), 'try', 'Purchases & Suppliers → Purchase Returns'] ] },
+      reports: { stats: [[tr('আজ বিক্রি'),'৳ —','Sales Report'],[tr('এই মাসের খরচ'),'৳ —','Expense Report']], tip: tr('মাস শেষে "কাকে কী বিক্রি, কী রিপ্লেস" দেখুন — কোন কাস্টমারের ব্যাটারি বেশি ফেরত আসছে বোঝা যায়।'), name: tr('রিপোর্ট'), short: tr('রিপোর্ট'), color: '#37474F', tint: '#ECEFF1', hint: tr('হিসাব এক নজরে'), btns: [
+        [tr('কাকে কী বিক্রি, কী রিপ্লেস'), tr('কাস্টমার অনুযায়ী (সবুজ / হলুদ / লাল)'), 'live', 'Spare Parts Shop → Sold vs replaced (customer-wise)'],
+        [tr('বিক্রি রিপোর্ট'), tr('দিন বা মাসের বিক্রি'), 'live', 'Sales & Customers → Reports → Sales Report'],
+        [tr('খরচ রিপোর্ট'), tr('কোন খাতে কত খরচ'), 'live', 'Expenses & Vouchers → Expense Report'],
+        [tr('লাভ-ক্ষতি'), tr('মাসের লাভ-ক্ষতি'), 'live', 'Accounts & Finance → Profit & Loss (Accounts)'],
+        [tr('ভ্যাট রিপোর্ট'), tr('শুধু রিপোর্ট'), 'live', 'Tax Reporting → VAT Report'],
+        [tr('কর্মচারী ও অনুমতি'), tr('কে কী করতে পারবে'), 'live', 'Administration → Users'] ] }
+    };
+    for (const k in pages) pages[k].btns = pages[k].btns.filter((b) => b[2] !== 'try');
+    const pg = pages[page];
+    const navOrder = [['home', tr('হোম'), tr('হোম')], ['sell', tr('বিক্রি'), tr('বিক্রি')], ['buy', tr('ক্রয়'), tr('ক্রয়')], ['money', tr('বাকি ও টাকা'), tr('বাকি')], ['stock', tr('স্টক'), tr('স্টক')], ['warranty', tr('ওয়ারেন্টি ও সিরিয়াল'), tr('ওয়ারেন্টি')], ['reports', tr('রিপোর্ট'), tr('রিপোর্ট')]];
+    const sideItems = navOrder.map(([id, label, short]) => ({
+      label, short,
+      go: () => go(id),
+      style: 'display:flex;align-items:center;min-height:42px;padding:0 18px 0 50px;border:0;text-align:left;font-size:14px;cursor:pointer;' +
+        (page === id ? 'background:#E3F2FD;color:#0D47A1;font-weight:700;border-right:3px solid #1976D2' : 'background:transparent;color:#424242'),
+      navStyle: 'flex:1 0 76px;min-height:56px;border:0;font-size:13px;font-weight:700;cursor:pointer;' +
+        (page === id ? 'background:#E3F2FD;color:#0D47A1;border-top:3px solid #1976D2' : 'background:#fff;color:#424242;border-top:3px solid transparent')
+    }));
+
+    const quickDefs = [
+      ['money', tr('কাস্টমারের কাছ থেকে টাকা পেলাম'), 'none', '#00796B', tr('৳')],
+      ['buy', tr('কোম্পানি থেকে মাল কিনলাম'), 'none', '#7B1FA2', tr('ক')],
+      ['warranty', tr('ওয়ারেন্টি ও সিরিয়াল খুঁজুন'), 'live', '#BF360C', tr('ও')],
+      ['reports', tr('কাকে কী বিক্রি, কী রিপ্লেস'), 'live', '#37474F', tr('র')]
+    ];
+    const quick = quickDefs.map(([id, label, st, c, ini]) => ({
+      label, initial: ini, go: () => go(id),
+      isMoney: id === 'money', isBuy: id === 'buy', isWarranty: id === 'warranty', isReports: id === 'reports',
+      bar: 'border:0;border-left:5px solid ' + c,
+      dot: 'flex:none;width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;background:' + c,
+      tagText: TAG[st].text, tagStyle: TAG[st].style
+    }));
+
+    const now = new Date();
+    const h = now.getHours();
+    const greeting = h < 5 ? tr('শুভ রাত্রি') : h < 12 ? tr('শুভ সকাল') : h < 16 ? tr('শুভ দুপুর') : h < 18 ? tr('শুভ বিকাল') : tr('শুভ সন্ধ্যা');
+    let dateText = '';
+    try { dateText = now.toLocaleDateString(lang === 'en' ? 'en-GB' : 'bn-BD', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) { dateText = ''; }
+
+    return {
+      L,
+      langBtn: lang === 'en' ? 'বাংলা' : 'English',
+      langAria: lang === 'en' ? 'বাংলায় দেখুন' : 'Switch to English',
+      toggleLang: () => this.setState({ lang: lang === 'en' ? 'bn' : 'en' }),
+      greeting, dateText,
+      isHome: page === 'home',
+      notHome: page !== 'home',
+      pageName: pg ? pg.name : tr('হোম'),
+      headTitle: pg ? pg.name : tr('আজকের দোকান'),
+      pageHint: pg ? pg.hint : '',
+      sideItems,
+      sideOther: ['Sales & Customers', 'Purchases & Suppliers', 'Inventory & Stock', 'Accounts & Finance', 'Point of Sale', 'Settings'],
+      tiles, quick,
+      pageHero: pg ? 'position:relative;overflow:hidden;background:' + pg.color + ';color:#fff;border-radius:8px;padding:22px 22px;box-shadow:0 4px 12px rgba(0,0,0,.18)' : '',
+      pageCount: pg ? (lang === 'en' ? pg.btns.length + tr('টি কাজ') : pg.btns.length + ' ' + tr('টি কাজ')) : '',
+      pageStats: pg ? pg.stats.map((k) => ({
+        label: k[0], value: k[1], src: tr('উৎস:') + ' ' + k[2],
+        style: 'background:#fff;border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;box-shadow:0 1px 4px rgba(0,0,0,.12);border-top:4px solid ' + pg.color,
+        valueStyle: 'font-size:26px;font-weight:700;color:' + pg.color
+      })) : [],
+      pageTip: pg ? pg.tip : '',
+      tipStyle: pg ? 'display:flex;gap:12px;align-items:flex-start;background:' + pg.tint + ';border-radius:8px;padding:14px 16px;color:#212121' : '',
+      tipIcon: pg ? 'flex:none;width:40px;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;color:#fff;background:' + pg.color : '',
+      topButtons: pg ? pg.btns.slice(0, 3).map((b, i) => ({
+        label: b[0], sub: b[1], path: b[3] || '',
+        initial: String(i + 1),
+        tagText: b[2] ? TAG[b[2]].text : '', tagStyle: b[2] ? TAG[b[2]].style : 'display:none',
+        badgeStyle: 'flex:none;width:36px;height:36px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;background:#fff;color:' + pg.color,
+        pathStyle: 'margin-top:auto;font-size:12px;line-height:1.4;background:rgba(0,0,0,.18);border-radius:4px;padding:4px 8px;color:#fff',
+        style: 'min-height:170px;text-align:left;display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding:16px;border:0;border-radius:8px;cursor:pointer;color:#fff;background:' + pg.color + ';box-shadow:0 4px 12px rgba(0,0,0,.2)'
+      })) : [],
+      restButtons: pg ? pg.btns.slice(3).map((b, i) => {
+        const isTry = b[2] === 'try';
+        return {
+          label: b[0], sub: b[1], path: b[3] || '',
+          initial: String(i + 4),
+          tagText: b[2] ? TAG[b[2]].text : '', tagStyle: b[2] ? TAG[b[2]].style : 'display:none',
+          badgeStyle: 'flex:none;width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:' + (isTry ? '#6D4C00' : pg.color) + ';background:' + (isTry ? '#FFF8E1' : pg.tint),
+          style: 'min-height:96px;text-align:left;display:flex;gap:12px;align-items:center;padding:12px 14px;border:0;border-left:5px solid ' + (isTry ? '#F9A825' : pg.color) + ';border-radius:8px;cursor:pointer;color:#212121;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12)'
+        };
+      }) : [],
+      goHome: () => go('home'),
+      goWarranty: () => go('warranty'),
+      panelHead: 'background:' + cur.color + ';color:#fff;padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between',
+      panelTagStyle: TAG[cur.status].style,
+      panelTagText: TAG[cur.status].text,
+      actionStyle: 'min-height:52px;padding:0 24px;border:0;border-radius:4px;color:#fff;font-size:17px;font-weight:700;letter-spacing:.01em;cursor:pointer;background:' + cur.color + ';box-shadow:0 3px 6px rgba(0,0,0,.2)',
+      panelTitle: cur.title,
+      panelAction: cur.action,
+      panelTotalLabel: cur.total,
+      panelNote: cur.note,
+      panelPath: cur.path,
+      showPay: cur.pay,
+      payCash: () => this.setState({ pay: 'cash' }),
+      payPart: () => this.setState({ pay: 'part' }),
+      payDue: () => this.setState({ pay: 'due' }),
+      pressedCash: pay === 'cash', pressedPart: pay === 'part', pressedDue: pay === 'due',
+      payCashStyle: payBtn('cash'), payPartStyle: payBtn('part') + ';border-left:1px solid #BDBDBD;border-right:1px solid #BDBDBD', payDueStyle: payBtn('due'),
+      payHint: payHints[pay],
+      steps: cur.steps.map((t, i) => ({
+        n: String(i + 1), text: t,
+        cardStyle: 'background:' + cur.tint + ';border-radius:8px;padding:12px;display:flex;gap:12px;align-items:flex-start',
+        numStyle: 'flex:none;width:36px;height:36px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;background:' + cur.color
+      }))
+    };
+  }
+}
+
+const TPL = document.getElementById('tpl');
+const ROOT = document.getElementById('app');
+const comp = new Component({});
+const HOLE = /\{\{([\w.]+)\}\}/g;
+function look(path, ctx) {
+  const parts = path.split('.');
+  if (parts[0] === 'true') return true; if (parts[0] === 'false') return false;
+  let v = (parts[0] in ctx.loc) ? ctx.loc[parts[0]] : ctx.vals[parts[0]];
+  for (let i = 1; i < parts.length && v != null; i++) v = v[parts[i]];
+  return v;
+}
+function fill(str, ctx) { return str.replace(HOLE, (m, p) => { const v = look(p, ctx); return v == null ? '' : String(v); }); }
+function build(node, parent, ctx) {
+  if (node.nodeType === 3) { parent.appendChild(document.createTextNode(fill(node.nodeValue, ctx))); return; }
+  if (node.nodeType !== 1) return;
+  const tag = node.localName;
+  if (tag === 'sc-if') {
+    const m = /^\{\{([\w.]+)\}\}$/.exec(node.getAttribute('value') || '');
+    if (m && look(m[1], ctx)) node.childNodes.forEach((c) => build(c, parent, ctx));
+    return;
+  }
+  if (tag === 'sc-for') {
+    const m = /^\{\{([\w.]+)\}\}$/.exec(node.getAttribute('list') || '');
+    const name = node.getAttribute('as');
+    const list = (m && look(m[1], ctx)) || [];
+    list.forEach((item) => { const c2 = { vals: ctx.vals, loc: Object.assign({}, ctx.loc, { [name]: item }) }; node.childNodes.forEach((c) => build(c, parent, c2)); });
+    return;
+  }
+  const el = node.namespaceURI === 'http://www.w3.org/2000/svg' ? document.createElementNS(node.namespaceURI, tag) : document.createElement(tag);
+  for (const a of Array.from(node.attributes)) {
+    if (a.name.startsWith('hint-')) continue;
+    if (a.name === 'onclick') { const m = /^\{\{([\w.]+)\}\}$/.exec(a.value); const fn = m && look(m[1], ctx); if (typeof fn === 'function') el.addEventListener('click', fn); continue; }
+    el.setAttribute(a.name, fill(a.value, ctx));
+  }
+  const src = tag === 'template' ? node.content : node;
+  src.childNodes.forEach((c) => build(c, el, ctx));
+  parent.appendChild(el);
+}
+function render() {
+  const vals = comp.renderVals();
+  const frag = document.createDocumentFragment();
+  TPL.content.childNodes.forEach((c) => build(c, frag, { vals, loc: {} }));
+  ROOT.replaceChildren(frag);
+}
+render();
+
+</script>
+</body>
+</html>
